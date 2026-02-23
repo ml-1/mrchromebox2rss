@@ -20,8 +20,8 @@ class NewsParser(HTMLParser):
         self.in_h2 = False
         self.current_title = None
         self.current_content = []
+        self.current_id = None  # store anchor
         self.items = []
-        self.capture_data = False
         self.current_tag = None
 
     def handle_starttag(self, tag, attrs):
@@ -31,6 +31,11 @@ class NewsParser(HTMLParser):
             self.in_h2 = True
             self.current_title = ""
             self.current_content = []
+            self.current_id = None
+            # capture id attribute if present
+            for attr, val in attrs:
+                if attr == "id":
+                    self.current_id = val
         elif self.current_title:
             self.current_tag = tag
             self.current_content.append(self.get_starttag_text())
@@ -52,7 +57,6 @@ class NewsParser(HTMLParser):
 
         # Detect date paragraph: <p>(YYYY.MM.DD)</p>
         date_match = re.search(r"<p>\((\d{4})\.(\d{2})\.(\d{2})\)</p>", content_html)
-
         pub_date = None
         if date_match:
             year, month, day = date_match.groups()
@@ -65,11 +69,15 @@ class NewsParser(HTMLParser):
         guid_source = self.current_title + content_html
         guid = hashlib.sha256(guid_source.encode()).hexdigest()
 
+        # build link including anchor if present
+        link = f"{URL}#{self.current_id}" if self.current_id else URL
+
         self.items.append({
             "title": self.current_title.strip(),
             "description": content_html.strip(),
             "pubDate": format_datetime(pub_date) if pub_date else None,
-            "guid": guid
+            "guid": guid,
+            "link": link
         })
 
     def close(self):
@@ -92,7 +100,7 @@ def build_rss(items):
         rss_items.append(f"""
     <item>
       <title>{item['title']}</title>
-      <link>{URL}</link>
+      <link>{item['link']}</link>
       <guid isPermaLink="false">{item['guid']}</guid>
       {pubdate_xml}
       <description><![CDATA[{item['description']}]]></description>
