@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-import requests
-from bs4 import BeautifulSoup
+import urllib.request
+from html.parser import HTMLParser
 from datetime import datetime
 from email.utils import format_datetime
 import hashlib
@@ -9,79 +9,78 @@ import json
 import os
 import re
 
-
 URL = "https://docs.mrchromebox.tech/docs/news.html"
 OUTPUT_FILE = "mrchromebox-news.xml"
 STATE_FILE = ".mrchromebox_rss_state.json"
 
 
-def fetch_page():
-    r = requests.get(URL, timeout=20)
-    r.raise_for_status()
-    return r.text
+class NewsParser(HTMLParser):
+    def __init__(self):
+        super().__init__()
+        self.in_h2 = False
+        self.current_title = None
+        self.current_content = []
+        self.items = []
+        self.capture_data = False
+        self.current_tag = None
 
+    def handle_starttag(self, tag, attrs):
+        if tag == "h2":
+            if self.current_title:
+                self._finish_item()
+            self.in_h2 = True
+            self.current_title = ""
+            self.current_content = []
+        elif self.current_title:
+            self.current_tag = tag
+            self.current_content.append(self.get_starttag_text())
 
-def parse_date_from_first_paragraph(header):
-    """
-    Looks for date in first paragraph after header:
-    <p>(2026.01.25)</p>
-    """
-    first_p = header.find_next_sibling("p")
-    if not first_p:
-        return None, None
+    def handle_endtag(self, tag):
+        if tag == "h2":
+            self.in_h2 = False
+        elif self.current_title:
+            self.current_content.append(f"</{tag}>")
 
-    text = first_p.get_text(strip=True)
-    match = re.match(r"\((\d{4})\.(\d{2})\.(\d{2})\)", text)
+    def handle_data(self, data):
+        if self.in_h2:
+            self.current_title += data.strip()
+        elif self.current_title:
+            self.current_content.append(data)
 
-    if not match:
-        return None, None
+    def _finish_item(self):
+        content_html = "".join(self.current_content).strip()
 
-    year, month, day = match.groups()
-    dt = datetime(int(year), int(month), int(day))
-    return dt, first_p
+        # Detect date paragraph: <p>(YYYY.MM.DD)</p>
+        date_match = re.search(r"<p>\((\d{4})\.(\d{2})\.(\d{2})\)</p>", content_html)
 
+        pub_date = None
+        if date_match:
+            year, month, day = date_match.groups()
+            pub_date = datetime(int(year), int(month), int(day))
+            # Remove date paragraph from content
+            content_html = re.sub(
+                r"<p>\(\d{4}\.\d{2}\.\d{2}\)</p>", "", content_html, count=1
+            )
 
-def parse_items(html):
-    soup = BeautifulSoup(html, "html.parser")
-    items = []
-
-    for header in soup.find_all(["h2"]):
-        title = header.get_text(strip=True)
-        if not title:
-            continue
-
-        pub_date, date_element = parse_date_from_first_paragraph(header)
-
-        anchor = header.get("id")
-        link = f"{URL}#{anchor}" if anchor else URL
-
-        description_parts = []
-
-        for sibling in header.find_next_siblings():
-            if sibling.name in ["h2"]:
-                break
-
-            # Skip date paragraph
-            if date_element and sibling == date_element:
-                continue
-
-            description_parts.append(str(sibling))
-
-        description_html = "\n".join(description_parts).strip()
-
-        # GUID based on title + raw description (stable even if no date)
-        guid_source = title + description_html
+        guid_source = self.current_title + content_html
         guid = hashlib.sha256(guid_source.encode()).hexdigest()
 
-        items.append({
-            "title": title,
-            "link": link,
-            "description": description_html,
+        self.items.append({
+            "title": self.current_title.strip(),
+            "description": content_html.strip(),
             "pubDate": format_datetime(pub_date) if pub_date else None,
             "guid": guid
         })
 
-    return items
+    def close(self):
+        super().close()
+        if self.current_title:
+            self._finish_item()
+
+
+def fetch_page():
+    with urllib.request.urlopen(URL) as response:
+        return response.read().decode("utf-8")
 
 
 def build_rss(items):
@@ -93,7 +92,7 @@ def build_rss(items):
         rss_items.append(f"""
     <item>
       <title>{item['title']}</title>
-      <link>{item['link']}</link>
+      <link>{URL}</link>
       <guid isPermaLink="false">{item['guid']}</guid>
       {pubdate_xml}
       <description><![CDATA[{item['description']}]]></description>
@@ -133,28 +132,26 @@ def save_state(hash_value):
 
 
 def main():
-    print("Fetching page...")
     html = fetch_page()
 
-    print("Parsing items...")
-    items = parse_items(html)
+    parser = NewsParser()
+    parser.feed(html)
+    items = parser.items
 
     new_hash = content_hash(items)
     old_hash = load_previous_hash()
 
     if new_hash == old_hash:
-        print("No changes detected. RSS not updated.")
+        print("No changes detected.")
         return
 
-    print("Changes detected. Writing RSS...")
     rss = build_rss(items)
 
     with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
         f.write(rss)
 
     save_state(new_hash)
-
-    print(f"RSS updated: {OUTPUT_FILE}")
+    print("RSS updated.")
 
 
 if __name__ == "__main__":

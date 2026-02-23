@@ -21,10 +21,6 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Install dependencies
-        run: |
-          pip install requests beautifulsoup4
-
       - name: Generate RSS
         run: |
           python generate_mrchromebox_rss.py
