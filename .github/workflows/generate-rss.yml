@@ -1,0 +1,43 @@
+name: Generate MrChromebox RSS
+
+on:
+  schedule:
+    - cron: "00 01 * * 1"   # every monday @ 01.00
+  workflow_dispatch:      # allow manual run
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          pip install requests beautifulsoup4
+
+      - name: Generate RSS
+        run: |
+          python generate_mrchromebox_rss.py
+
+      - name: Commit and push if changed
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+
+          if [[ -n "$(git status --porcelain)" ]]; then
+            git add mrchromebox-news.xml .mrchromebox_rss_state.json
+            git commit -m "Update RSS feed"
+            git push
+          else
+            echo "No changes to commit"
+          fi
