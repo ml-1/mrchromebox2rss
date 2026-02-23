@@ -8,7 +8,7 @@ import hashlib
 import json
 import os
 import re
-import sys
+
 
 URL = "https://docs.mrchromebox.tech/docs/news.html"
 OUTPUT_FILE = "mrchromebox-news.xml"
@@ -111,6 +111,7 @@ def build_rss(items):
   </channel>
 </rss>
 """
+
 
 def content_hash(items):
     m = hashlib.sha256()
