@@ -1,4 +1,4 @@
-name: Generate MrChromebox RSS
+name: Generate MrChromebox RSS feed
 
 on:
   schedule:
