@@ -56,14 +56,14 @@ class NewsParser(HTMLParser):
         content_html = "".join(self.current_content).strip()
 
         # Detect date paragraph: <p>(YYYY.MM.DD)</p>
-        date_match = re.search(r"<p>\((\d{4})\.(\d{2})\.(\d{2})\)</p>", content_html)
+        date_match = re.search(r"<p>\((\d{4})\.(\d{2})\.(\d{2}).*?\)</p>", content_html)
         pub_date = None
         if date_match:
             year, month, day = date_match.groups()
             pub_date = datetime(int(year), int(month), int(day))
             # Remove date paragraph from content
             content_html = re.sub(
-                r"<p>\(\d{4}\.\d{2}\.\d{2}\)</p>", "", content_html, count=1
+                r"<p>\(\d{4}\.\d{2}\.\d{2}.*?\)</p>", "", content_html, count=1
             )
 
         guid_source = self.current_title + content_html
