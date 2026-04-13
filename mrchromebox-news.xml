@@ -7,6 +7,14 @@
     <language>en-us</language>
     
     <item>
+      <title>MrChromebox-2603.1 Release</title>
+      <link>https://docs.mrchromebox.tech/docs/news.html#mrchromebox-2603-1-release</link>
+      <guid isPermaLink="false">9c30ee587209b0f85e55063c7dc5e027f6bc864403c8af074a779890bfb47908</guid>
+      <pubDate>Thu, 09 Apr 2026 00:00:00 -0000</pubDate>
+      <description><![CDATA[</span></a><p>A small update with a few bug fixes:</p><ul><li>Fixed an edk2 issue with eMMC and/or SD card detection at boot</li><li>Fixed the default storage type for TANIKS/TAEKO (so should work OOTB now)</li><li>Fixed the G2 touchscreen on BLIPPER/BEETLEY</li><li>Fixed the RGB keyboard backlight on MITHRAX</li></ul>]]></description>
+    </item>
+        
+    <item>
       <title>MrChromebox-2603.0 Release</title>
       <link>https://docs.mrchromebox.tech/docs/news.html#mrchromebox-2603-0-release</link>
       <guid isPermaLink="false">e2cf3de74a61eac44ff6224e3aca4c122e693c3aaeac4c9f60b17e36a64dd0bd</guid>
