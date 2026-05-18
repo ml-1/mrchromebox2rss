@@ -7,6 +7,14 @@
     <language>en-us</language>
     
     <item>
+      <title>MrChromebox-2603.2 Release</title>
+      <link>https://docs.mrchromebox.tech/docs/news.html#mrchromebox-2603-2-release</link>
+      <guid isPermaLink="false">ff610574bf874f9808fb21f42e2b0e2c56f09e1ea790d6944a39f39add61b8a2</guid>
+      <pubDate>Sun, 17 May 2026 00:00:00 -0000</pubDate>
+      <description><![CDATA[</span></a><p>Another small update with a few tweaks and bug fixes:</p><ul><li>Fixed tablet mode detection on several reef, octopus, and poppy variants</li><li>Added runtime-D3 (RTD3) power management for NVMe on several brya-based boards</li><li>Fixed a S0ix issue on brya-based boards with optional fingerprint reader</li><li>Updated VBTs for brox variants</li><li>Added firmware image for pujjoniro variant</li><li>Fixed discrete WiFi on pirika boards</li><li>Added an '--ipxe' option to the build script</li><li>Fixed eMMC/NVMe selection on taeko4es</li><li>Misc fixes for sarien (unsupported / still under testing)</li></ul>]]></description>
+    </item>
+        
+    <item>
       <title>MrChromebox-2603.1 Release</title>
       <link>https://docs.mrchromebox.tech/docs/news.html#mrchromebox-2603-1-release</link>
       <guid isPermaLink="false">9c30ee587209b0f85e55063c7dc5e027f6bc864403c8af074a779890bfb47908</guid>
