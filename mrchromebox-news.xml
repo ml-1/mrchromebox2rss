@@ -7,6 +7,22 @@
     <language>en-us</language>
     
     <item>
+      <title>Script Updates</title>
+      <link>https://docs.mrchromebox.tech/docs/news.html#script-updates</link>
+      <guid isPermaLink="false">ab049b0570109951965d9bcbba5f8f5aa131034dd89737101a91d6d5bb3d6b49</guid>
+      <pubDate>Wed, 15 Jul 2026 00:00:00 -0000</pubDate>
+      <description><![CDATA[</span></a><p>Firmware Utility Script improvements:</p><ul><li>Ability to roll back to the previous (n-1) Full ROM release when eligible</li><li>Automatic retry after a failed Full ROM flash, then restore the previous firmware if the retry fails</li><li>Update/rollback menus show release versions (not just dates)</li><li>Per-board hotfix overrides for shipping fixes outside a full release train</li><li>Clearer software write-protect handling before flashes and GBB/HWID writes</li><li>More reliable USB device selection and mount handling (backup, custom flash, stock restore)</li><li>Cleaner menu error handling and assorted setup/flash path bug fixes</li></ul><p>New helper:</p><ul><li><code>download-fullrom.sh</code> — download one or more Full ROM images from the CDN for offline flashing / unbricking (board name or HWID; latest or pinned release). See the <a href="https://github.com/MrChromebox/scripts#offline-full-rom-downloads" target="_blank" rel="noopener noreferrer">scripts README</a> or <code>./download-fullrom.sh -h</code>.</li></ul>]]></description>
+    </item>
+        
+    <item>
+      <title>MrChromebox-2606.1 Release</title>
+      <link>https://docs.mrchromebox.tech/docs/news.html#mrchromebox-2606-1-release</link>
+      <guid isPermaLink="false">9088b2e132c70cf93b0ee32eb43fba42ec95ccd2755065481f14a7395af14430</guid>
+      <pubDate>Tue, 14 Jul 2026 00:00:00 -0000</pubDate>
+      <description><![CDATA[</span></a><p>A small update with a few tweaks and bug fixes:</p><ul><li>Fixed Linux booting on AMD StoneyRidge devices (#966)</li><li>Fixed Windows booting on Intel Haswell/Broadwell/Baytrail devices (#967)</li><li>Updated EC firmware on Puff-based Chromeboxes (10th-gen) to improve fan control and fix S0ix (#963)</li><li>Fixed pre-OS external display output on Tigerlake (volteer) and Alderlake/Raptorlake-U/P (brya) based boards</li></ul>]]></description>
+    </item>
+        
+    <item>
       <title>MrChromebox-2606.6 Release</title>
       <link>https://docs.mrchromebox.tech/docs/news.html#mrchromebox-2606-6-release</link>
       <guid isPermaLink="false">281a1a32e37744f073e7fe32198a1cde1bf7dd5b5fb0294abe1463ed0dfcb289</guid>
